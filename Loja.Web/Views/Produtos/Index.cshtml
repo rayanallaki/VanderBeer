@@ -1,0 +1,109 @@
+@model List<Loja.Web.Models.ProdutoWeb>
+
+@{
+    ViewData["Title"] = "Produtos";
+    var cultura = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+}
+
+<h1>Produtos VanderBeer</h1>
+
+<a asp-action="Criar" class="btn btn-primary mb-3">
+    Cadastrar bebida
+</a>
+
+<a asp-controller="Pedidos" asp-action="Index"
+   class="btn btn-outline-primary mb-3">
+    Ver pedidos
+</a>
+
+@if (TempData["Sucesso"] is string sucesso)
+{
+    <div class="alert alert-success">@sucesso</div>
+}
+
+@if (TempData["Erro"] is string erro)
+{
+    <div class="alert alert-danger">@erro</div>
+}
+
+@if (ViewBag.Erro is not null)
+{
+    <div class="alert alert-danger">@ViewBag.Erro</div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Bebida</th>
+                <th>Categoria</th>
+                <th>Tipo</th>
+                <th>Preço</th>
+                <th>Estoque</th>
+                <th>Situação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var produto in Model)
+            {
+                <tr>
+                    <td>@produto.Nome</td>
+                    <td>@produto.Categoria</td>
+                    <td>@(produto.Alcoolico ? "Alcoólica" : "Não alcoólica")</td>
+                    <td>@produto.Preco.ToString("C2", cultura)</td>
+                    <td>@produto.Estoque</td>
+                    <td>@(produto.Ativo ? "Ativo" : "Inativo")</td>
+                    <td>
+                        <a asp-action="Editar"
+                           asp-route-id="@produto.Id"
+                           class="btn btn-sm btn-outline-primary mb-2">
+                            Editar
+                        </a>
+
+                        <form asp-action="AlterarSituacao"
+                              asp-route-id="@produto.Id"
+                              method="post"
+                              class="mb-2">
+
+                            <input type="hidden"
+                                    name="ativo"
+                                    value="@(produto.Ativo ? "false" : "true")" />
+
+                            <button class="btn btn-sm btn-outline-secondary">
+                                @(produto.Ativo ? "Desativar" : "Ativar")
+                            </button>
+                        </form>
+
+                        <form asp-action="AjustarEstoque"
+                              asp-route-id="@produto.Id"
+                              method="post">
+
+                            <label for="ajuste-@produto.Id" class="small">
+                                Ajuste: positivo adiciona, negativo retira
+                            </label>
+
+                            <div class="input-group input-group-sm">
+                                <input id="ajuste-@produto.Id"
+                                       name="ajuste"
+                                       type="number"
+                                       step="1"
+                                       required
+                                       class="form-control"
+                                       placeholder="Ex.: 5 ou -2" />
+
+                                <button class="btn btn-outline-primary">
+                                    Aplicar
+                                </button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<form asp-controller="Conta" asp-action="Sair" method="post">
+    <button class="btn btn-outline-secondary">Sair da conta</button>
+</form>

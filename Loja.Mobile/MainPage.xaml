@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Loja.Mobile.Models"
+    x:Class="Loja.Mobile.MainPage"
+    Title="VanderBeer">
+
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,Auto,*"
+          RowSpacing="12">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="8">
+            <Label Text="Bebidas VanderBeer"
+                FontSize="26"
+                FontAttributes="Bold" />
+
+            <Button Text="Criar conta"
+                    Clicked="CadastroClicked" />
+
+            <Button x:Name="ContaButton"
+                    Text="Entrar"
+                    Clicked="ContaClicked" />
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1"
+            ColumnDefinitions="*,*,*"
+            ColumnSpacing="10">
+
+            <Button x:Name="AtualizarButton"
+                    Grid.Column="0"
+                    Text="Atualizar catálogo"
+                    Clicked="AtualizarClicked" />
+
+            <Button Grid.Column="1"
+                    Text="Ver carrinho"
+                    Clicked="CarrinhoClicked" />
+
+            <Button Grid.Column="2"
+                    Text="Meus pedidos"
+                    Clicked="PedidosClicked" />
+        </Grid>
+
+        <Label x:Name="MensagemLabel"
+               Grid.Row="2"
+               Text="Carregando catálogo..." />
+
+        <CollectionView x:Name="ProdutosView"
+                        Grid.Row="3"
+                        SelectionMode="None">
+
+            <CollectionView.EmptyView>
+                <Label Text="Nenhuma bebida disponível."
+                       Margin="0,20" />
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Produto">
+                    <Border Padding="14"
+                            Margin="0,0,0,10"
+                            Stroke="#CCCCCC">
+
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="{Binding Nome}"
+                                   FontSize="18"
+                                   FontAttributes="Bold" />
+
+                            <Label Text="{Binding Categoria}" />
+
+                            <Label Text="{Binding TipoBebida}"
+                                   FontSize="12" />
+
+                            <Label Text="{Binding PrecoFormatado}"
+                                   FontSize="18" />
+
+                            <Label Text="{Binding Estoque,
+                                          StringFormat='Estoque: {0}'}" />
+                            <Button Text="Adicionar ao carrinho"
+                                    Clicked="AdicionarClicked" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,65 @@
+@model Loja.Web.Models.ProdutoFormulario
+
+@{
+    var criando = Model.Id == 0;
+    ViewData["Title"] = criando ? "Cadastrar bebida" : "Editar bebida";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-controller="Produtos"
+      asp-action="@(criando ? "Criar" : "Editar")"
+      asp-route-id="@Model.Id"
+      method="post"
+      style="max-width: 600px;">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <input asp-for="Id" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="Nome" class="form-label">Nome</label>
+        <input asp-for="Nome" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Categoria" class="form-label">Categoria</label>
+        <input asp-for="Categoria" class="form-control" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Alcoolico" class="form-check-input" />
+        <label asp-for="Alcoolico" class="form-check-label">
+            Bebida alcoólica
+        </label>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Descricao" class="form-label">Descrição</label>
+        <textarea asp-for="Descricao" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Preco" class="form-label">Preço — exemplo: 3,50</label>
+        <input asp-for="Preco"
+               type="text"
+               inputmode="decimal"
+               class="form-control" />
+    </div>
+
+    @if (criando)
+    {
+        <div class="mb-3">
+            <label asp-for="Estoque" class="form-label">Estoque inicial</label>
+            <input asp-for="Estoque" class="form-control" />
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="Ativo" class="form-check-input" />
+            <label asp-for="Ativo" class="form-check-label">Produto ativo</label>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+</form>

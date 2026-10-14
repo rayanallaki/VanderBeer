@@ -1,0 +1,142 @@
+@model Loja.Web.Models.PedidosPagina
+
+@{
+    ViewData["Title"] = "Pedidos";
+    var cultura = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+
+    var statusDisponiveis = new[]
+    {
+        "Recebido", "EmSeparacao", "Pronto", "Finalizado", "Cancelado"
+    };
+}
+
+<h1>Pedidos recebidos</h1>
+
+<a asp-controller="Produtos" asp-action="Index"
+   class="btn btn-outline-primary mb-3">
+    Produtos
+</a>
+
+@if (TempData["Sucesso"] is string sucesso)
+{
+    <div class="alert alert-success">@sucesso</div>
+}
+
+@if (TempData["Erro"] is string erro)
+{
+    <div class="alert alert-danger">@erro</div>
+}
+
+@if (ViewBag.Erro is not null)
+{
+    <div class="alert alert-danger">@ViewBag.Erro</div>
+}
+
+<form asp-action="Index" method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="">Todos</option>
+            @foreach (var status in statusDisponiveis)
+            {
+                <option value="@status" selected="@(Model.Status == status)">
+                    @status
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Data inicial</label>
+        <input name="inicio" type="date" class="form-control"
+               value="@Model.Inicio?.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Data final</label>
+        <input name="fim" type="date" class="form-control"
+               value="@Model.Fim?.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="col-md-3 align-self-end">
+        <button class="btn btn-primary">Filtrar</button>
+        <a asp-action="Index" class="btn btn-secondary">Limpar</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Pedido</th>
+                <th>Data</th>
+                <th>Itens</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Alterar status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in Model.Pedidos)
+            {
+                var proximos = pedido.Status switch
+                {
+                    "Recebido" => new[] { "EmSeparacao", "Cancelado" },
+                    "EmSeparacao" => new[] { "Pronto", "Cancelado" },
+                    "Pronto" => new[] { "Finalizado" },
+                    _ => Array.Empty<string>()
+                };
+
+                <tr>
+                    <td>@pedido.Id</td>
+                    <td>@pedido.DataHora.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @foreach (var item in pedido.Itens)
+                        {
+                            <div>
+                                @item.Quantidade × @item.Nome —
+                                @item.Subtotal.ToString("C2", cultura)
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(pedido.Observacao))
+                        {
+                            <small>Observação: @pedido.Observacao</small>
+                        }
+                    </td>
+                    <td>@pedido.PrecoTotal.ToString("C2", cultura)</td>
+                    <td>@pedido.Status</td>
+                    <td>
+                        @if (proximos.Length > 0)
+                        {
+                            <form asp-action="AtualizarStatus"
+                                  asp-route-id="@pedido.Id"
+                                  method="post">
+                                <select name="status"
+                                        class="form-select form-select-sm mb-2">
+                                    @foreach (var proximo in proximos)
+                                    {
+                                        <option value="@proximo">@proximo</option>
+                                    }
+                                </select>
+
+                                <button class="btn btn-sm btn-primary">
+                                    Atualizar
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span>Encerrado</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.Pedidos.Count == 0 && ViewBag.Erro is null)
+{
+    <p>Nenhum pedido encontrado para esse filtro.</p>
+}

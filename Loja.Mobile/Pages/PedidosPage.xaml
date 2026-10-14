@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Loja.Mobile.Models"
+    x:Class="Loja.Mobile.Pages.PedidosPage"
+    Title="Meus pedidos">
+
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,Auto,*"
+          RowSpacing="12">
+
+        <Label Text="Meus pedidos"
+               FontSize="26"
+               FontAttributes="Bold" />
+
+        <Button x:Name="AtualizarButton"
+                Grid.Row="1"
+                Text="Atualizar pedidos"
+                Clicked="AtualizarClicked" />
+
+        <Label x:Name="MensagemLabel"
+               Grid.Row="2" />
+
+        <CollectionView x:Name="PedidosView"
+                        Grid.Row="3"
+                        SelectionMode="None">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:PedidoApp">
+                    <Border Padding="14"
+                            Margin="0,0,0,10"
+                            Stroke="#CCCCCC">
+
+                        <VerticalStackLayout Spacing="7">
+                            <Label Text="{Binding Id,
+                                          StringFormat='Pedido {0}'}"
+                                   FontSize="18"
+                                   FontAttributes="Bold" />
+
+                            <Label Text="{Binding DataFormatada}" />
+
+                            <Label Text="{Binding Status,
+                                          StringFormat='Situação: {0}'}" />
+
+                            <Label Text="{Binding ResumoItens}" />
+
+                            <Label Text="{Binding TotalFormatado,
+                                          StringFormat='Total: {0}'}"
+                                   FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
